@@ -1,14 +1,13 @@
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
-
 import React, { useState } from "react";
 import axios from "axios";
-import { motion } from 'framer-motion'
+import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import {
   Container,
   Paper,
-  Grid,
   Button,
   Typography,
   Stack,
@@ -16,44 +15,32 @@ import {
   Select,
   InputLabel,
   MenuItem,
-  FormHelperText,
   FormControl,
 } from '@mui/material';
-import { Field, Formik, Form } from 'formik'
-import { Link } from 'react-router-dom'
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from '../firebase.js'
+
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
-
 const LostItem = () => {
-  const [show, setShow] = useState(false);
-  const [progress, setProgress] = useState(0)
 
-  const [loading, setloading] = useState(false);
   const usertoken = window.localStorage.getItem("token");
+
   const getUserId = () => {
     const user = JSON.parse(window.localStorage.getItem('user'));
     return user ? user._id : null;
   };
-  
-
-  const config = { headers: { token: usertoken } };
-
-  const [formData, setFormData] = useState({
-    name: '',
-    userId: getUserId(),
-    description: '',
-    type: '',
-    location: '',
-    date: '',
-    number: '',
-  });
 
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleShow = () => setShow(true);
+  // Handle image selection
+  const handleImageUpload = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
 
+  // Validation schema
   const schema = Yup.object().shape({
     name: Yup.string().required('Item name is required'),
     description: Yup.string().required('Description is required'),
@@ -63,306 +50,200 @@ const LostItem = () => {
     number: Yup.string().required('Phone number is required'),
   });
 
-  const handleImageUpload = (e) => {
-      setImage(e.target.files);
-    
+  // Submit form
+  const handleSubmit = async (values) => {
+
+    try {
+
+      await schema.validate(values, { abortEarly: false });
+
+      setLoading(true);
+
+      const formData = new FormData();
+
+      formData.append("name", values.name);
+      formData.append("description", values.description);
+      formData.append("type", values.type);
+      formData.append("location", values.location);
+      formData.append("date", values.date);
+      formData.append("number", values.number);
+      formData.append("userId", getUserId());
+
+      if (image) {
+        formData.append("image", image);
+      }
+
+      await axios.post(
+        "http://localhost:5000/Items/newItem",
+        formData,
+        {
+          headers: {
+            token: usertoken,
+            "Content-Type": "multipart/form-data"
+          }
+        }
+      );
+
+      toast.success("Item listed successfully!");
+
+      setLoading(false);
+
+      window.location.href = "/mylistings";
+
+    } catch (error) {
+
+      console.error(error);
+
+      toast.error("Error creating item");
+
+      setLoading(false);
+
+    }
   };
 
-  const handleSubmit = async (values) => {
-  
-    try {
-     await schema.validate(values, { abortEarly: false });
-    } catch (error) {
-      const errorMessages = error.inner.map((err) => err.message);
-      toast.error(errorMessages.join('\n'), {
-        position: "bottom-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        })
-      return;
-    }
-  
-    if (!image || image.length === 0) {
-      toast.error('Please upload atleast one image', {
-        position: "bottom-right",
-        autoClose: 1000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        })
-      return;
-    }
-  
-    setloading(true);
-    const promises = [];
-
-    for (let i = 0; i < image.length; i++) {
-      const img = image[i];
-      const storageRef = ref(storage, `/images/${img.name}`);
-      const fileRef = ref(storageRef, img.name);
-      const uploadTask = uploadBytesResumable(fileRef, img);
-      const promise = new Promise((resolve, reject) => {
-        uploadTask.on('state_changed',
-          (snapshot) => {
-            const uploaded = Math.floor(
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-            );
-            setProgress(uploaded);
-          },
-          (error) => {
-            console.log(error);
-            reject(error);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref)
-              .then((imgUrl) => {
-                resolve(imgUrl);
-              })
-              .catch((error) => {
-                console.log(error);
-                reject(error);
-              });
-          }
-        );
-      });
-  
-      promises.push(promise);
-    }
-  
-    Promise.all(promises)
-      .then((urls) => {
-        const newItem = { ...values, img: urls };
-            axios.post('http://localhost:4000/Items/newItem', newItem, config)
-            .then(() => {
-            toast.success('Wohoo 🤩! Item listed successfully.', {
-              position: "bottom-right",
-              autoClose: 1000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-              })
-            setloading(false);
-            setShow(false);
-            window.location.href="/mylistings"
-          })      
-          .catch((error) => {
-            console.log("An error occurred:", error);
-            toast.error('Oops 🙁! Something went wrong.', {
-              position: "bottom-right",
-              autoClose: 1000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-              })
-            setloading(false);
-           
-        });
-      })
-      .catch((error) => {
-            console.log("An error occurred:", error);
-            toast.error('Oops 🙁! Something went wrong.', {
-              position: "bottom-right",
-              autoClose: 1000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "light",
-              })
-            setloading(false);
-          });
-        };
-  
-
   return (
+
     <Stack width="100%" pt="60px" alignItems="center">
-            <Typography fontSize="30px" color="primary" fontWeight="">
-              If your item is lost or you found someone's item, Post it Here!
-            </Typography>
-            <Stack
-                width="100%"
-                maxWidth="1440px"
-                direction="row"
-                justifyContent={{ xs: 'center', md: 'space-evenly' }}
-                alignItems="center"
-                
-            >
-                <Formik
-                    initialValues={{name: '',
-                    userId: getUserId(),
-                    description: '',
-                    type: '',
-                    location: '',
-                    date: '',
-                    number: '',
-                  }
-                  }
-                  validationSchema={schema}
-                    onSubmit={(values) => {
-                        handleSubmit(values)
-                    }}
-                >
-                    {({
-                      values,
-                      handleChange
-                    }) => (
-                      <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
-                      <Paper variant="outlined" sx={{ my: { xs: 12, md: 6}, p: { xs: 12, md: 5 } }}>
-                        <Form>
 
-                                <Grid item xs={6} pt="10px">
-                                          <Typography variant="h6">
-                                              Picture
-                                          </Typography>
-                                          <Stack direction="row" alignItems="center" spacing={2}>
-                                              <Button variant="contained" component="label" endIcon={<PhotoCamera />}>
-                                                      Upload
-                                                      <input hidden accept="image/*" multiple type="file" 
-                                                      id="image"
-                                                      label="Upload Image"
-                                                      name="image" 
-                                                      onChange={handleImageUpload} />
-                                              </Button>
-                                              
-                                          </Stack>
-                                          <Grid item xs={6}>
-                                                <Typography variant="h6">
-                                                    Item Details
-                                                </Typography>
-                                          </Grid>
-                                          <Grid item xs={12} sm={6}>
-                                            <TextField
-                                              required
-                                              id="name"
-                                              name="name"
-                                              label="Item name "
-                                              size="small"
-                                              fullWidth
-                                              variant="standard"
-                                              value={values.name}
-                                              onChange={handleChange}
-                                            />
-                                          </Grid>
-                                          <Grid item xs={12}>
-                                            <TextField
-                                              label="Description "
-                                              id="date"
-                                              name="description"
-                                              multiline={true}
-                                              size="small"
-                                              required
-                                              fullWidth
-                                              variant="standard"
-                                              value={values.description}
-                                              onChange={handleChange}
-                                            />
-                                          </Grid>
-                                          <Grid item xs={12}>
-                                            <TextField
-                                              required
-                                              fullWidth
-                                              variant="standard"
-                                              id="location"
-                                              name="location"
-                                              label="Where did you find/lost it "
-                                              size="small"
-                                              value={values.location}
-                                              onChange={handleChange}
-                                            />
-                                          </Grid>
-                                          <Grid item xs={12}>
-                                            <TextField
-                                              required
-                                              fullWidth
-                                              variant="standard"
-                                              id="date"
-                                              name="date"
-                                              label="When did you find/lost it "
-                                              size="small"
-                                              value={values.date}
-                                              onChange={handleChange}
-                                            />
-                                          </Grid>
-                                          <Grid item xs={12}>
-                                            <TextField
-                                              required
-                                              fullWidth
-                                              variant="standard"
-                                              id="number"
-                                              name="number"
-                                              label="How can we contact you? "
-                                              size="small"
-                                              value={values.number}
-                                              onChange={handleChange}
+      <Typography fontSize="30px" mb={3}>
+        If your item is lost or you found someone's item, Post it Here!
+      </Typography>
 
-                                            />
-                                          </Grid>
-                                          <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                            <InputLabel id="demo-simple-select-standard-label">Item Type</InputLabel>
-                                            <Select
-                                              labelId="demo-simple-select-standard-label"
-                                              id="demo-simple-select-standard"
-                                              name="type"
-                                              value={values.type}
-                                              onChange={handleChange}
-                                            >
-                                    
-                                              <MenuItem value="Lost">Lost It</MenuItem>
-                                              <MenuItem value="Found">Found It</MenuItem>
-                                            </Select>
-                                            <FormHelperText>Please select the type of item</FormHelperText>
-                                          </FormControl>
+      <Formik
+        initialValues={{
+          name: '',
+          description: '',
+          type: '',
+          location: '',
+          date: '',
+          number: '',
+        }}
+        validationSchema={schema}
+        onSubmit={handleSubmit}
+      >
 
-                                          <Grid item xs={6}>
-                                              <motion.div whileTap={{ scale: 0.98 }}>
-                                                <Stack spacing={2} direction="row">
-                                                  <Button type="submit" variant="contained">Ctreate post</Button>
-                                                </Stack>
-                                              </motion.div>
-                                          </Grid>
-                                    
-                                </Grid>
-                                
-                               </Form>
-                               </Paper>
-                               </Container>
-                    )}
-                </Formik>
+        {({ values, handleChange }) => (
 
-                <motion.div
-                    whileHover={{ scale: [null, 1.05, 1.05] }}
-                    transition={{ duration: 0.4 }}
-                >
-                    <Stack
-                        justifyContent="center"
-                        alignItems="center"
-                        width="100%"
-                        maxWidth="450px"
-                        sx={{ display: { xs: 'none', md: 'flex' } }}
-                    >
-                        <img
-                            width="100%"
-                            src="https://i.ibb.co/Q65DB0d/list-item.png"
-                            alt="Post Image"
-                        />
-                    </Stack>
+          <Container maxWidth="sm">
+
+            <Paper sx={{ p: 4 }}>
+
+              <Form>
+
+                {/* Upload Image */}
+                <Stack mb={2}>
+                  <Button
+                    variant="contained"
+                    component="label"
+                    endIcon={<PhotoCamera />}
+                  >
+                    Upload Image
+                    <input
+                      hidden
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                    />
+                  </Button>
+
+                  {image && (
+                    <Typography variant="body2" mt={1}>
+                      Selected: {image.name}
+                    </Typography>
+                  )}
+                </Stack>
+
+                {/* Name */}
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  name="name"
+                  label="Item name"
+                  value={values.name}
+                  onChange={handleChange}
+                />
+
+                {/* Description */}
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  name="description"
+                  label="Description"
+                  value={values.description}
+                  onChange={handleChange}
+                />
+
+                {/* Location */}
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  name="location"
+                  label="Location"
+                  value={values.location}
+                  onChange={handleChange}
+                />
+
+                {/* Date */}
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  name="date"
+                  label="Date"
+                  value={values.date}
+                  onChange={handleChange}
+                />
+
+                {/* Phone */}
+                <TextField
+                  fullWidth
+                  margin="normal"
+                  name="number"
+                  label="Phone"
+                  value={values.number}
+                  onChange={handleChange}
+                />
+
+                {/* Type */}
+                <FormControl fullWidth margin="normal">
+
+                  <InputLabel>Item Type</InputLabel>
+
+                  <Select
+                    name="type"
+                    value={values.type}
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="Lost">Lost</MenuItem>
+                    <MenuItem value="Found">Found</MenuItem>
+                  </Select>
+
+                </FormControl>
+
+                {/* Submit */}
+                <motion.div whileTap={{ scale: 0.95 }}>
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    disabled={loading}
+                    sx={{ mt: 2 }}
+                  >
+                    {loading ? "Uploading..." : "Create Post"}
+                  </Button>
+
                 </motion.div>
-            </Stack>
+
+              </Form>
+
+            </Paper>
+
+          </Container>
+
+        )}
+
+      </Formik>
+
     </Stack>
   );
 };

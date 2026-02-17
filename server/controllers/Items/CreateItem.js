@@ -1,25 +1,42 @@
-import Item from '../../models/Item.js'
-import User from '../../models/User.js'
+import Item from "../../models/Item.js";
+import mongoose from "mongoose";
 
-const createItem = async (req,res) => {
-        
-    try {
-        const itemData = req.body
-        console.log(itemData)
-        const newItem = new Item(itemData)
-        if (req.file) {
-            newItem.img = req.file.path;
-          }
-        await newItem.save()
-        res.status(200).json({ ok: true, msg: 'Item Created' })
-        
-    } catch (error) {
-        console.log(error)
-        res.status(404).json({
-            ok: false,
-            msg: 'An error occured, contact with admin',
-        })
-    }
-}
+export const createItem = async (req, res) => {
 
-export default createItem
+  try {
+
+    console.log("Received item:", req.body);
+
+    const newItem = new Item({
+
+      name: req.body.name,
+      description: req.body.description,
+      type: req.body.type,
+      location: req.body.location,
+      date: req.body.date,
+      number: req.body.number,
+
+      // convert string to ObjectId
+      userId: new mongoose.Types.ObjectId(req.body.userId),
+
+      // img must be array because schema requires array
+      img: req.file ? [req.file.filename] : []
+
+
+    });
+
+    const savedItem = await newItem.save();
+
+    console.log("Item saved:", savedItem);
+
+    res.status(201).json(savedItem);
+
+  } catch (error) {
+
+    console.log("Error saving item:", error);
+
+    res.status(500).json(error.message);
+
+  }
+
+};

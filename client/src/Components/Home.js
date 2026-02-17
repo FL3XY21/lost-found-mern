@@ -73,6 +73,7 @@ const Home = () => {
                     <img
                         src="https://i.ibb.co/P1NQV2n/vector1.png"
                         width="60%"
+                        alt="Lost item"
                     />
                     
                     <Typography variant="subtitle1" color="#194067">
@@ -100,6 +101,7 @@ const Home = () => {
                 <img
                         src="https://i.ibb.co/9Z8qTQj/bg2.png"
                         width="100%"
+                        alt="Lost item"
                     />
                 </Stack>
             </Stack>
@@ -162,7 +164,7 @@ const Home = () => {
                                     textTransform: 'none',
                                 }}
                             >
-                                <img src="https://i.ibb.co/5rKZCdX/Main-Logo-2.png" />
+                                <img src="https://i.ibb.co/5rKZCdX/Main-Logo-2.png" alt="Lost item" />
                                 Lost item
                             </Button>
                         </motion.div>
@@ -184,7 +186,7 @@ const Home = () => {
                                 textTransform: 'none',
                             }}
                         >
-                            <img src="https://i.ibb.co/5rKZCdX/Main-Logo-2.png" />
+                            <img src="https://i.ibb.co/5rKZCdX/Main-Logo-2.png" alt="Lost item"/>
                             Found item
                         </Button>
                         </motion.div>
@@ -205,7 +207,7 @@ const Home = () => {
                                 textTransform: 'none',
                             }}
                         >
-                            <img src="https://i.ibb.co/5rKZCdX/Main-Logo-2.png" />
+                            <img src="https://i.ibb.co/5rKZCdX/Main-Logo-2.png" alt="Lost item" />
                             Post a lost item
                         </Button>
                         </motion.div>

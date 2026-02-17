@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { FcAbout } from 'react-icons/fc';
 import { FcOvertime } from 'react-icons/fc';
 
+
 import { Link } from 'react-router-dom'
 import { setConstraint } from "../constraints";
 import {
@@ -13,8 +14,13 @@ import {
   Avatar,
   Stack,
   Pagination,
+  TextField,
+  Select,
+  MenuItem
 } from '@mui/material'
+
 import Axios from "axios";
+
 
 const Paginationn = ({ page, setPage, max }) => {
   const handleChange = (event, page) => {
@@ -59,11 +65,19 @@ export default function FoundItems() {
   const [item, setitem] = useState("");
   const [page, setPage] = useState(1);
   const [maxPages, setMaxPages] = useState(1);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+<TextField
+  label="Search items"
+  variant="outlined"
+  sx={{ mb: 2, width: "300px" }}
+  onChange={(e) => setSearch(e.target.value)}
+/>
 
   useEffect(() => {
     
     Axios({
-      url: "http://localhost:4000/items",
+      url: "http://localhost:5000/items",
       method: "GET",
     })
       .then((response) => {      
@@ -90,7 +104,11 @@ export default function FoundItems() {
             ":" +
             created_date.getMinutes();
           
-          if (item.type === "Found") {
+          if (
+  (filter === "all" || item.type === filter || item.status === filter) &&
+  item.name.toLowerCase().includes(search.toLowerCase())
+) {
+
             let user = false;
             if (item.userId === user_info._id) {
               user = true;
@@ -133,12 +151,17 @@ export default function FoundItems() {
                               }}
                           >
                               <Avatar
-                                  src={item.img}
-                                  sx={{
-                                      width: '190px',
-                                      height: '190px',
-                                  }}
-                              />
+  src={
+    item.img && item.img.length > 0
+      ? `http://localhost:5000/uploads/${item.img[0]}`
+      : "https://i.ibb.co/DpZ3qy2/Untitled-design-10.png"
+  }
+  sx={{
+    width: '190px',
+    height: '190px',
+  }}
+/>
+
                           </Stack>
                           
                       </Stack>
@@ -253,6 +276,26 @@ export default function FoundItems() {
         </>
       </Stack>
       </Stack>
+
+<Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+
+  <TextField
+    label="Search items"
+    variant="outlined"
+    onChange={(e) => setSearch(e.target.value)}
+  />
+
+  <Select
+    value={filter}
+    onChange={(e) => setFilter(e.target.value)}
+  >
+    <MenuItem value="all">All</MenuItem>
+    <MenuItem value="Lost">Lost</MenuItem>
+    <MenuItem value="Found">Found</MenuItem>
+    <MenuItem value="resolved">Resolved</MenuItem>
+  </Select>
+
+</Stack>
 
     <Stack
       pt="20px"

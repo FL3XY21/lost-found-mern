@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+
+import { BrowserRouter, Route, Routes} from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import Signup from "./Components/Signup";
 import Login from "./Components/Login";
@@ -10,6 +10,8 @@ import ItemPage from "./Components/ItemPage";
 import LostItem from "./Components/Lost_item";
 import MyListings from "./Components/MyListings";
 import Layout from "./layout"; 
+import AdminDashboard from "./Components/AdminDashboard";
+
 window.OneSignal = window.OneSignal || [];
 const OneSignal = window.OneSignal;
 function App() {
@@ -29,6 +31,8 @@ function App() {
           <Route path="/mylistings" element={<MyListings/>} />
           <Route path="/:item" element={<ItemPage/>} />
           <Route path="/*" element={<Home/>} />
+          <Route path="/admin" element={<AdminDashboard />} />
+
           </Routes>
           <ToastContainer />
           </Layout>

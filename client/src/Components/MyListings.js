@@ -14,11 +14,15 @@ import {
   Stack,
   Pagination,
 } from '@mui/material'
+
 import Axios from "axios";
 
+const BASE_URL = "http://localhost:5000";
+
 const Paginationn = ({ page, setPage, max }) => {
-  const handleChange = (event, page) => {
-    setPage(page);
+
+  const handleChange = (event, value) => {
+    setPage(value);
   };
 
   return (
@@ -34,55 +38,51 @@ const Paginationn = ({ page, setPage, max }) => {
 };
 
 export default function Feed() {
+
   const getUserId = () => {
     const user = JSON.parse(window.localStorage.getItem('user'));
     return user ? user : null;
   };
+
   const user_info = getUserId();
+
   setConstraint(true);
-  
-  const [item, setitem] = useState("");
+
+  const [item, setitem] = useState([]);
   const [page, setPage] = useState(1);
   const [maxPages, setMaxPages] = useState(1);
 
-  const ReadMore = ({ children }) => {
-    const text = children;
-    const [isReadMore, setIsReadMore] = useState(true);
-    const toggleReadMore = () => {
-      setIsReadMore(!isReadMore);
-    };
-    return (
-      <p className="text">
-        {isReadMore ? text.slice(0, 15) : text}
-        <span onClick={toggleReadMore} className="read-or-hide">
-          {isReadMore ? "...." : " show less"}
-        </span>
-      </p>
-    );
-  };
   useEffect(() => {
-    // console.log("Test");
-    Axios({
-      url: "http://localhost:4000/items",
-      method: "GET",
-    })
+
+    Axios.get(`${BASE_URL}/items`)
       .then((response) => {
+
         const allitems = response.data.items.reverse();
+
         const itemsPerPage = 9;
+
         const numItems = allitems.length;
+
         setMaxPages(Math.ceil(numItems / itemsPerPage));
+
         const startIndex = (page - 1) * itemsPerPage;
+
         const endIndex = startIndex + itemsPerPage;
+
         const data = allitems.slice(startIndex, endIndex);
-          // console.log(response.data);
+
         let items = [];
-        data.map((item) => {
-          let created_date = new Date(item.createdAt);
-          // console.log(date.toString());
-          let createdAt =
+
+        data.forEach((item) => {
+
+          if (!user_info || item.userId !== user_info._id) return;
+
+          const created_date = new Date(item.createdAt);
+
+          const createdAt =
             created_date.getDate() +
             "/" +
-            created_date.getMonth() +
+            (created_date.getMonth() + 1) +
             "/" +
             created_date.getFullYear() +
             " " +
@@ -90,172 +90,160 @@ export default function Feed() {
             ":" +
             created_date.getMinutes();
 
-          if (item.userId === getUserId()._id ) {
-          items.push(
-            <motion.div
-            whileHover={{ scale: [null, 1.05, 1.05] }}
-            transition={{ duration: 0.4 }}
-            key={item.name}
-        >
-            <Card
-                sx={{
-                    width: '270px',
-                    height: '400px',
-                    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-                }}
-            >
-                <CardContent
-                    sx={{
-                        borderRadius: '8px',
-                        padding: '8px',
-                        gap: '16px',
-                    }}
-                >
-                    <Stack
-                        alignItems="center"
-                        justifyContent="center"
-                        flexDirection="row"
-                        position="relative"
-                        sx={{
-                            backgroundColor: '#9CC0DF',
-                            height: '200px',
-                            borderRadius: '8px',
-                        }}
-                    >
-                        <Stack
-                            sx={{
-                                borderRadius: '7rem',
-                            }}
-                        >
-                            <Avatar
-                                src={item.img}
-                                sx={{
-                                    width: '170px',
-                                    height: '170px',
-                                }}
-                            />
-                        </Stack>
-                        
-                    </Stack>
-                    <Stack p="11px" gap="11px">
-                        <Typography
-                            noWrap
-                            gutterBottom
-                            fontSize="25px"
-                            component="div"
-                            fontWeight={'bold'}
-                            m="0"
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'flex-start',
-                                gap: '16px',
-                            }}
-                        >
-                            {item.name}
-                
-                        </Typography>
-                
-                        </Stack>
-                        <Stack direction="row" width="100%" gap="15px">
-                            <FcAbout fontSize="25px" />
-                                <Typography
-                                    // ml="5px"
-                                    noWrap
-                                    fontSize="16px"
-                                    color="black"
-                                    width="100%"
-                                >
-                                    {item.description.toString().slice(0, 30)} ...
-                                </Typography>
+          // FIXED IMAGE URL HERE
+          const imageUrl =
+            item.img && item.img.length > 0
+              ? `${BASE_URL}/uploads/${item.img[0]}`
+              : "";
 
-                        </Stack>
-                        <Stack pb="19px" pt="11px"  direction="row" width="100%" gap="15px">
-                                      <FcOvertime fontSize="25px" />
-                                      <Typography
-                                          ml="5px"
-                                          noWrap
-                                          fontSize="16px"
-                                          color="black"
-                                      >
-                                       {createdAt}
-                                      </Typography>
-                                </Stack>
-                            <motion.div whileTap={{ scale: 0.98 }}>
-                                <Button
-                                    component={Link}
-                                    to={`/${item.name}?cid=${item._id}&type=${item.type}/true`}
-                                    variant={'contained'}
-                                    color= 'primary'
-                                    sx={{
-                                        textTransform: 'none',
-                                        width: '140px',
-                                        borderRadius: '8px',
-                                        
-                                    }}
-                                >
-                                    More Details
-                                </Button>
-                            </motion.div>
+          items.push(
+
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.4 }}
+              key={item._id}
+            >
+
+              <Card
+                sx={{
+                  width: '270px',
+                  height: '400px',
+                  boxShadow: '0px 4px 4px rgba(0,0,0,0.25)',
+                }}
+              >
+
+                <CardContent>
+
+                  <Stack
+                    alignItems="center"
+                    justifyContent="center"
+                    sx={{
+                      backgroundColor: '#9CC0DF',
+                      height: '200px',
+                      borderRadius: '8px',
+                    }}
+                  >
+
+                    <Avatar
+                      src={imageUrl}
+                      sx={{
+                        width: '170px',
+                        height: '170px',
+                      }}
+                    />
+
+                  </Stack>
+<Button
+  variant="contained"
+  color="success"
+  sx={{ mt: 1 }}
+  onClick={async () => {
+
+    await Axios.put(
+      `http://localhost:5000/items/resolve/${item._id}`
+    );
+
+    window.location.reload();
+
+  }}
+>
+  Mark as Resolved
+</Button>
+
+                  <Stack p="11px" gap="11px">
+
+                    <Typography fontSize="22px" fontWeight="bold">
+                      {item.name}
+                    </Typography>
+
+                    <Stack direction="row" gap="10px">
+                      <FcAbout size={22} />
+
+                      <Typography fontSize="15px">
+                        {item.description.slice(0, 30)}...
+                      </Typography>
+
+                    </Stack>
+
+                    <Stack direction="row" gap="10px">
+                      <FcOvertime size={22} />
+
+                      <Typography fontSize="15px">
+                        {createdAt}
+                      </Typography>
+
+                    </Stack>
+
+                    <motion.div whileTap={{ scale: 0.95 }}>
+
+                      <Button
+                        component={Link}
+                        to={`/${item.name}?cid=${item._id}&type=${item.type}/true`}
+                        variant="contained"
+                      >
+                        More Details
+                      </Button>
+
+                    </motion.div>
+
+                  </Stack>
+
                 </CardContent>
-            </Card>
-        </motion.div>
-          )};
+
+              </Card>
+
+            </motion.div>
+
+          );
 
         });
+
         setitem(items);
+
       })
       .catch((err) => {
+
         console.log("Error :", err);
+
       });
+
   }, [page]);
 
   return (
+
     <>
-    <Stack
-      direction="row"
-      width="100%"
-      sx={{ backgroundColor: 'primary.main' }}
-      height="125px"
-      gap="4px"
-      alignItems="center"
-      justifyContent="center"
-      
-    >
       <Stack
-        spacing={0}
-        position="relative"
-        justifyContent="center"
+        direction="row"
         width="100%"
-        maxWidth="1440px"
+        sx={{ backgroundColor: 'primary.main' }}
         height="125px"
-        overflow="hidden"
-        ml={{ xs: 3, sm: 5, md: 10 }}
+        alignItems="center"
+        justifyContent="center"
       >
 
-        <>
-          <Typography
-            fontSize={{ xs: '17px', sm: '21px', md: '23px' }}
-            color="white"
-            fontWeight="bold"
-          >
-            Here you can find your posted Items, {user_info.nickname}
-          </Typography>
-        </>
+        <Typography fontSize="23px" color="white" fontWeight="bold">
+
+          Here you can find your posted Items, {user_info?.nickname}
+
+        </Typography>
+
       </Stack>
-      </Stack>
-<Stack
-      pt="20px"
-      direction="row"
-      justifyContent={'center'}
-      flexWrap="wrap"
-      gap="24px"
-      maxWidth="1440px"
-    >
+
+      <Stack
+        pt="20px"
+        direction="row"
+        justifyContent="center"
+        flexWrap="wrap"
+        gap="24px"
+      >
+
         {item}
+
       </Stack>
+
       <Paginationn page={page} setPage={setPage} max={maxPages} />
 
-      </>
+    </>
+
   );
 }

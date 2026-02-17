@@ -4,8 +4,9 @@ import { BsFillCaretDownFill } from 'react-icons/bs'
 import { Button, Menu, MenuItem, Stack } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useLocation } from "react-router-dom";
 
-function Navbar() {
+function Navbar() { 
   const token = window.localStorage.getItem("token");
 
   const [anchorEl, setAnchorEl] = useState(null)
@@ -17,6 +18,12 @@ function Navbar() {
     const handleClose = () => {
         setAnchorEl(null)
     }
+
+const location = useLocation();
+
+if (location.pathname.startsWith("/admin")) {
+  return null;
+}
 
   
   const buttonStyle = {

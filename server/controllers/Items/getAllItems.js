@@ -2,7 +2,8 @@ import Item from '../../models/Item.js'
 
 const getAllItems = async (req, res) => {
     try {
-        const items = await Item.find();
+        const items = await Item.find({ status: "approved" });
+
 
         if (items.length > 0) {
             return res.json({ items })
