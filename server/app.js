@@ -9,7 +9,7 @@ dotenv.config();
 import userRoutes from './routes/userRoutes.js'
 import ItemRoutes from './routes/ItemRoutes.js'
 import adminRoutes from "./routes/adminRoutes.js";
-
+import path from "path";
 // ✅ Load environment variables FIRST
 
 
