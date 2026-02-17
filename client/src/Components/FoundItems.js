@@ -77,7 +77,7 @@ export default function FoundItems() {
   useEffect(() => {
     
     Axios({
-      url: "http://localhost:5000/items",
+      url: "https://lost-found-mern-pivc.onrender.com/items",
       method: "GET",
     })
       .then((response) => {      
@@ -153,7 +153,7 @@ export default function FoundItems() {
                               <Avatar
   src={
     item.img && item.img.length > 0
-      ? `http://localhost:5000/uploads/${item.img[0]}`
+      ? `https://lost-found-mern-pivc.onrender.com/uploads/${item.img[0]}`
       : "https://i.ibb.co/DpZ3qy2/Untitled-design-10.png"
   }
   sx={{

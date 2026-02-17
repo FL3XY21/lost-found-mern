@@ -17,7 +17,7 @@ import {
 
 import Axios from "axios";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://lost-found-mern-pivc.onrender.com";
 
 const Paginationn = ({ page, setPage, max }) => {
 
@@ -140,7 +140,7 @@ export default function Feed() {
   onClick={async () => {
 
     await Axios.put(
-      `http://localhost:5000/items/resolve/${item._id}`
+      `https://lost-found-mern-pivc.onrender.com/items/resolve/${item._id}`
     );
 
     window.location.reload();

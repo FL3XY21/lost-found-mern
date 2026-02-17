@@ -63,7 +63,7 @@ export default function LostItems() {
   useEffect(() => {
     
     Axios({
-      url: "http://localhost:5000/items",
+      url: "https://lost-found-mern-pivc.onrender.com/items",
       method: "GET",
     })
       .then((response) => {      

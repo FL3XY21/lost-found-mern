@@ -46,7 +46,7 @@ const Footer = () => {
                     </Stack>
                 </Stack>
                 <Link
-                    href="https://github.com/KcMelek/Lost-Found-MERN"
+                    href="https://github.com/FL3XY21/lost-found-mern"
                     target="_blank"
                     sx={{
                         fontSize: '12px',

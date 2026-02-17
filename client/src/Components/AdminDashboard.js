@@ -20,7 +20,7 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import ReportIcon from "@mui/icons-material/Report";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://lost-found-mern-pivc.onrender.com";
 
 export default function AdminDashboard() {
 
@@ -107,7 +107,7 @@ const updateStatus = async (id, status) => {
   try {
 
     await Axios.put(
-      `http://localhost:5000/admin/item/${id}/status`,
+      `https://lost-found-mern-pivc.onrender.com/admin/item/${id}/status`,
       { status },
       config
     );
