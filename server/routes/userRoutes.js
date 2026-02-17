@@ -1,9 +1,9 @@
 import express from 'express'
 
-import createUser from '../controllers/user/createUser.js'
-import { loginUser } from '../controllers/user/loginUser.js'
-import { renewToken } from '../controllers/user/renewToken.js'
-import { updateUser } from '../controllers/user/updateUser.js'
+import createUser from '../controllers/User/CreateUser.js'
+import { loginUser } from '../controllers/User/LoginUser.js'
+import { renewToken } from '../controllers/User/renewToken.js'
+import { updateUser } from '../controllers/User/UpdateUser.js'
 import { validateJWT } from '../middlewares/validateToken.js'
 
 const router = express.Router()
