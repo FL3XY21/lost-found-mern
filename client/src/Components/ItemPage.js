@@ -51,40 +51,7 @@ const BASE_URL = "https://lost-found-mern-pivc.onrender.com";
   const current_user = queryParams.get('type').split("/")[1];
 
   console.log(current_user)
-  
-  useEffect(() => {
-    axios({
-      url: `https://lost-found-mern-pivc.onrender.com/items/${item_id}`,
-      method: "GET",
-    })
-      .then((response) => {
-        // console.log(response.data);
-        const data = response.data.item;
-        
-          let slides = []
-      
-          data.img.map((item) => {
-              slides.push({ image: item })
-          })
-      
-      
-        
-        setItem(response.data.item);
-        console.log(response.data.item);
-
-        let created_date = new Date(data.createdAt);
-        let createdAt =
-          created_date.getDate() +
-          "/" +
-          created_date.getMonth() +
-          "/" +
-          created_date.getFullYear() +
-          " " +
-          created_date.getHours() +
-          ":" +
-          created_date.getMinutes();
-
-const handleClaim = async () => {
+  const handleClaim = async () => {
 
   try {
 
@@ -137,6 +104,39 @@ const handleReport = async () => {
   }
 
 };
+  useEffect(() => {
+    axios({
+      url: `https://lost-found-mern-pivc.onrender.com/items/${item_id}`,
+      method: "GET",
+    })
+      .then((response) => {
+        // console.log(response.data);
+        const data = response.data.item;
+        
+          let slides = []
+      
+          data.img.map((item) => {
+              slides.push({ image: item })
+          })
+      
+      
+        
+        setItem(response.data.item);
+        console.log(response.data.item);
+
+        let created_date = new Date(data.createdAt);
+        let createdAt =
+          created_date.getDate() +
+          "/" +
+          created_date.getMonth() +
+          "/" +
+          created_date.getFullYear() +
+          " " +
+          created_date.getHours() +
+          ":" +
+          created_date.getMinutes();
+
+
           const itemDetails = (
             <><Stack
               width="100%"
