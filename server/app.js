@@ -10,7 +10,9 @@ import userRoutes from './routes/userRoutes.js'
 import ItemRoutes from './routes/ItemRoutes.js'
 import adminRoutes from "./routes/adminRoutes.js";
 import path from "path";
-// ✅ Load environment variables FIRST
+import claimRoutes from "./routes/claimRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
+
 
 
 // ✅ Create express app
@@ -25,6 +27,8 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 app.use("/uploads", express.static("uploads"));
 app.use("/admin", adminRoutes);
+app.use("/claims", claimRoutes);
+app.use("/reports", reportRoutes);
 
 // ✅ CORS headers (your original code kept)
 app.use((_req, res, next) => {

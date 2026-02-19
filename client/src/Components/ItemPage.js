@@ -235,7 +235,28 @@ function ItemPage() {
 
                 </Stack>
               </Stack>
-            </Stack><Stack width="100%" px={{ xs: 3, sm: 5, md: 10 }} gap="15px">
+            </Stack>
+            <Stack direction="row" spacing={2} mt={2}>
+
+  <Button
+    variant="contained"
+    color="success"
+    onClick={handleClaim}
+  >
+    Claim Item
+  </Button>
+
+  <Button
+    variant="contained"
+    color="error"
+    onClick={handleReport}
+  >
+    Report Item
+  </Button>
+
+</Stack>
+
+            <Stack width="100%" px={{ xs: 3, sm: 5, md: 10 }} gap="15px">
 
                 <Stack width="100%" mt='30px' sx={{}}>
                   <Stack
@@ -527,6 +548,60 @@ function ItemPage() {
 
     </>
   );
+  const handleClaim = async () => {
+
+  try {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    await Axios.post(
+      "http://localhost:5000/claims/create",
+      {
+        itemId: item._id,
+        claimedBy: user._id
+      }
+    );
+
+    alert("Claim submitted successfully");
+
+  }
+  catch (error) {
+
+    console.log(error);
+    alert("Error submitting claim");
+
+  }
+
+};
+
+
+const handleReport = async () => {
+
+  try {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    await Axios.post(
+      "http://localhost:5000/reports/create",
+      {
+        itemId: item._id,
+        reportedBy: user._id,
+        reason: "Suspicious item"
+      }
+    );
+
+    alert("Report submitted");
+
+  }
+  catch (error) {
+
+    console.log(error);
+    alert("Error reporting item");
+
+  }
+
+};
+
 }
 
 export default ItemPage;

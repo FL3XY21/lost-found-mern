@@ -34,6 +34,8 @@ export default function AdminDashboard() {
 
   const [users, setUsers] = useState([]);
   const [items, setItems] = useState([]);
+const [claims, setClaims] = useState([]);
+const [reports, setReports] = useState([]);
 
   const fetchUsers = async () => {
 
@@ -121,11 +123,34 @@ const updateStatus = async (id, status) => {
   }
 
 };
+const fetchClaims = async () => {
+
+  const res = await Axios.get(
+    "http://localhost:5000/admin/claims",
+    config
+  );
+
+  setClaims(res.data);
+
+};
+
+const fetchReports = async () => {
+
+  const res = await Axios.get(
+    "http://localhost:5000/admin/reports",
+    config
+  );
+
+  setReports(res.data);
+
+};
 
   useEffect(() => {
 
     fetchUsers();
     fetchItems();
+     fetchClaims();
+  fetchReports();
 // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -414,7 +439,40 @@ const updateStatus = async (id, status) => {
     fontWeight: "bold",
     fontSize: "12px"
   }}
->
+><Typography variant="h5" mt={5}>
+  Claims
+</Typography>
+
+<Grid container spacing={3}>
+
+  {claims.map(claim => (
+
+    <Grid item xs={12} md={3} key={claim._id}>
+
+      <Card>
+        <CardContent>
+
+          <Typography>
+            Item: {claim.itemId?.name}
+          </Typography>
+
+          <Typography>
+            User: {claim.claimedBy?.email}
+          </Typography>
+
+          <Typography>
+            Status: {claim.status}
+          </Typography>
+
+        </CardContent>
+      </Card>
+
+    </Grid>
+
+  ))}
+
+</Grid>
+
   {item.status.toUpperCase()}
 </Box>
 
