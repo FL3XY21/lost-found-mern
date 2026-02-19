@@ -345,71 +345,7 @@ const fetchReports = async () => {
 
 
         {/* ITEMS */}
-
-        <Typography variant="h5" mb={2}>
-          Manage Items
-        </Typography>
-
-        <Divider sx={{ mb: 3 }} />
-
-        <Grid container spacing={3}>
-
-          {items.map(item => (
-
-            <Grid item xs={12} md={3} key={item._id}>
-
-              <Card>
-
-                <CardContent>
-
-                  <Avatar
-                    src={
-                      item.img && item.img.length > 0
-                        ? `${BASE_URL}/uploads/${item.img[0]}`
-                        : ""
-                    }
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      mb: 1
-                    }}
-                  />
-<Typography color={
-  item.status === "approved" ? "green" :
-  item.status === "rejected" ? "red" :
-  item.status === "resolved" ? "blue" :
-  "orange"
-}>
-  Status: {item.status}
-</Typography>
-<Button
-  variant="contained"
-  color="success"
-  sx={{ mt: 1, mr: 1 }}
-  onClick={() => updateStatus(item._id, "approved")}
->
-  Approve
-</Button>
-
-<Button
-  variant="contained"
-  color="error"
-  sx={{ mt: 1, mr: 1 }}
-  onClick={() => updateStatus(item._id, "rejected")}
->
-  Reject
-</Button>
-
-<Button
-  variant="contained"
-  color="primary"
-  sx={{ mt: 1 }}
-  onClick={() => updateStatus(item._id, "resolved")}
->
-  Resolve
-</Button>
-
-                  <Typography fontWeight="bold">
+ <Typography fontWeight="bold">
                     {item.name}
                   </Typography>
                   <Box
@@ -475,6 +411,70 @@ const fetchReports = async () => {
 
   {item.status.toUpperCase()}
 </Box>
+        <Typography variant="h5" mb={2}>
+          Manage Items
+        </Typography>
+
+        <Divider sx={{ mb: 3 }} />
+
+        <Grid container spacing={3}>
+
+          {items.map(item => (
+
+            <Grid item xs={12} md={3} key={item._id}>
+
+              <Card>
+
+                <CardContent>
+
+                  <Avatar
+                    src={
+                      item.img && item.img.length > 0
+                        ? `${BASE_URL}/uploads/${item.img[0]}`
+                        : ""
+                    }
+                    sx={{
+                      width: 80,
+                      height: 80,
+                      mb: 1
+                    }}
+                  />
+<Typography color={
+  item.status === "approved" ? "green" :
+  item.status === "rejected" ? "red" :
+  item.status === "resolved" ? "blue" :
+  "orange"
+}>
+  Status: {item.status}
+</Typography>
+<Button
+  variant="contained"
+  color="success"
+  sx={{ mt: 1, mr: 1 }}
+  onClick={() => updateStatus(item._id, "approved")}
+>
+  Approve
+</Button>
+
+<Button
+  variant="contained"
+  color="error"
+  sx={{ mt: 1, mr: 1 }}
+  onClick={() => updateStatus(item._id, "rejected")}
+>
+  Reject
+</Button>
+
+<Button
+  variant="contained"
+  color="primary"
+  sx={{ mt: 1 }}
+  onClick={() => updateStatus(item._id, "resolved")}
+>
+  Resolve
+</Button>
+
+                 
 
 
                   <Typography>

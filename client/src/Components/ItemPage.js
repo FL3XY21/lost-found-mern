@@ -83,7 +83,59 @@ function ItemPage() {
           ":" +
           created_date.getMinutes();
 
+const handleClaim = async () => {
 
+  try {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    await Axios.post(
+      "http://localhost:5000/claims/create",
+      {
+        itemId: item._id,
+        claimedBy: user._id
+      }
+    );
+
+    alert("Claim submitted successfully");
+
+  }
+  catch (error) {
+
+    console.log(error);
+    alert("Error submitting claim");
+
+  }
+
+};
+
+
+const handleReport = async () => {
+
+  try {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    await Axios.post(
+      "http://localhost:5000/reports/create",
+      {
+        itemId: item._id,
+        reportedBy: user._id,
+        reason: "Suspicious item"
+      }
+    );
+
+    alert("Report submitted");
+
+  }
+  catch (error) {
+
+    console.log(error);
+    alert("Error reporting item");
+
+  }
+
+};
           const itemDetails = (
             <><Stack
               width="100%"
@@ -549,59 +601,7 @@ function ItemPage() {
 
     </>
   );
-  const handleClaim = async () => {
-
-  try {
-
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    await Axios.post(
-      "http://localhost:5000/claims/create",
-      {
-        itemId: item._id,
-        claimedBy: user._id
-      }
-    );
-
-    alert("Claim submitted successfully");
-
-  }
-  catch (error) {
-
-    console.log(error);
-    alert("Error submitting claim");
-
-  }
-
-};
-
-
-const handleReport = async () => {
-
-  try {
-
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    await Axios.post(
-      "http://localhost:5000/reports/create",
-      {
-        itemId: item._id,
-        reportedBy: user._id,
-        reason: "Suspicious item"
-      }
-    );
-
-    alert("Report submitted");
-
-  }
-  catch (error) {
-
-    console.log(error);
-    alert("Error reporting item");
-
-  }
-
-};
+  
 
 }
 
