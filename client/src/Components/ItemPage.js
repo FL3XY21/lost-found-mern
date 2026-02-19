@@ -15,6 +15,7 @@ import {
 import { Carousel } from 'react-carousel-minimal'
 import {MdDateRange} from 'react-icons/md'
 import {GrMap} from 'react-icons/gr'
+import Axios from "axios";
 
 
 
