@@ -51,26 +51,30 @@ const BASE_URL = "https://lost-found-mern-pivc.onrender.com";
   const current_user = queryParams.get('type').split("/")[1];
 
   console.log(current_user)
-  const handleClaim = async () => {
+const handleClaim = async () => {
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!user || !user._id) {
+    alert("Please login first");
+    return;
+  }
 
   try {
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
     await Axios.post(
-      "https://lost-found-mern-pivc.onrender.com/claims/create",
+      `https://lost-found-mern-pivc.onrender.com/claims/create`,
       {
-        itemId: item._id,
+        itemId: item?._id,
         claimedBy: user._id
       }
     );
 
-    alert("Claim submitted successfully");
+    alert("Claim submitted");
 
-  }
-  catch (error) {
+  } catch (err) {
 
-    console.log(error);
+    console.log(err);
     alert("Error submitting claim");
 
   }
@@ -78,16 +82,22 @@ const BASE_URL = "https://lost-found-mern-pivc.onrender.com";
 };
 
 
+
 const handleReport = async () => {
+
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!user || !user._id) {
+    alert("Please login first");
+    return;
+  }
 
   try {
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
     await Axios.post(
-      "https://lost-found-mern-pivc.onrender.com/reports/create",
+      `https://lost-found-mern-pivc.onrender.com/reports/create`,
       {
-        itemId: item._id,
+        itemId: item?._id,
         reportedBy: user._id,
         reason: "Suspicious item"
       }
@@ -95,15 +105,15 @@ const handleReport = async () => {
 
     alert("Report submitted");
 
-  }
-  catch (error) {
+  } catch (err) {
 
-    console.log(error);
-    alert("Error reporting item");
+    console.log(err);
+    alert("Error submitting report");
 
   }
 
 };
+
   useEffect(() => {
     axios({
       url: `https://lost-found-mern-pivc.onrender.com/items/${item_id}`,
@@ -202,7 +212,7 @@ const handleReport = async () => {
                     <Avatar
   src={
     data?.userId?.img?.length
-      ? `${BASE_URL}/uploads/${data.userId.img[0]}`
+      ? `https://lost-found-mern-pivc.onrender.com/uploads/${data.userId.img[0]}`
       : ""
   }
   sx={{
